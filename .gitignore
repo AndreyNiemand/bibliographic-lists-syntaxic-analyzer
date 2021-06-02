@@ -1,3 +1,5 @@
 Analyzer/bin
 Analyzer/obj
 .vs/
+Tests/bin
+Tests/obj
