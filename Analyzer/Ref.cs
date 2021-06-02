@@ -5,17 +5,28 @@ using System.Text.RegularExpressions;
 
 namespace bibliographic_lists_syntaxic_analyzer
 {
-    public interface IRef
+    public abstract class Ref
     {
         public string[] Autors { get; }
         public int? Year { get; }
-        public (int?, int?) Pages { get; }
+        public (uint?, uint?) Pages { get; }
         public uint? PageCount { get; }
         public uint? Tom { get; }
-        public string? Title { get; }
-        public string? Publisher { get; }
+        public string Title { get; }
+        public string Publisher { get; }
 
-        public static IRef Parse(string s)
+        public Ref(string[] authors, string title, int? year, (uint?, uint?, uint?) pagesInfo, uint? tom, string publisher)
+        {
+            this.Autors = authors;
+            this.Title = title;
+            this.Year = year;
+            this.Pages = (pagesInfo.Item1, pagesInfo.Item2);
+            this.PageCount = pagesInfo.Item3;
+            this.Tom = tom;
+            this.Publisher = publisher;
+        }
+
+        public static Ref Parse(string s)
         {
             return new IntratextRef(
                 authors: ParseAuthorsInfo(ref s),
@@ -27,11 +38,11 @@ namespace bibliographic_lists_syntaxic_analyzer
             );
         }
 
-        private static string? ParsePublisherInfo(string s)
+        private static string ParsePublisherInfo(string s)
         {
             var regex = new Regex(@"([\w-]+\.?)(:[\w\s]+)?");
 
-            string? p = null;
+            string p = null;
             List<string> list = new List<string>();
 
             for (var match = regex.Match(s); match.Success; match = match.NextMatch())
@@ -42,11 +53,11 @@ namespace bibliographic_lists_syntaxic_analyzer
 
             return p;
         }
-        private static string? ParseTitleInfo(string s)
+        private static string ParseTitleInfo(string s)
         {
             var regex = new Regex(@"\w[\w\s,:]*\.");
 
-            string? title = null;
+            string title = null;
 
             for (var match = regex.Match(s); match.Success; match = match.NextMatch())
             { 
@@ -116,12 +127,12 @@ namespace bibliographic_lists_syntaxic_analyzer
             return year;
         }
 
-        private static (int?, int?, uint?) ParsePagesInfo(ref string s)
+        private static (uint?, uint?, uint?) ParsePagesInfo(ref string s)
         {
             Regex regex = new Regex(@"((?<c>\d+) с\.)|(С\. (?<p1>\d+)(-(?<p2>\d+))?)");
 
-            int? page1 = null;
-            int? page2 = null;
+            uint? page1 = null;
+            uint? page2 = null;
             uint? count = null;
             var match = regex.Match(s);
 
@@ -130,13 +141,13 @@ namespace bibliographic_lists_syntaxic_analyzer
                 var p1 = match.Groups["p1"];
                 if (p1.Success)
                 {
-                    page1 = Int32.Parse(p1.Value);
+                    page1 = UInt32.Parse(p1.Value);
                 }
 
                 var p2 = match.Groups["p2"];
                 if (p2.Success)
                 {
-                    page2 = Int32.Parse(p2.Value);
+                    page2 = UInt32.Parse(p2.Value);
                 }
 
                 var c = match.Groups["c"];

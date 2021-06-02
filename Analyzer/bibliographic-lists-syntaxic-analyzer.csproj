@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Standarts\**" />
+    <Compile Remove="ГОСТ-Р-7.0.5-2008\**" />
+    <EmbeddedResource Remove="Standarts\**" />
+    <EmbeddedResource Remove="ГОСТ-Р-7.0.5-2008\**" />
+    <None Remove="Standarts\**" />
+    <None Remove="ГОСТ-Р-7.0.5-2008\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FakeItEasy" Version="7.0.2" />
   </ItemGroup>
 
