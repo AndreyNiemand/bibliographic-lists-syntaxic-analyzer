@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.13.0" />
     <PackageReference Include="FakeItEasy" Version="7.0.2" />
   </ItemGroup>
 

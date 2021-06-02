@@ -38,6 +38,12 @@ namespace bibliographic_lists_syntaxic_analyzer
             );
         }
 
+        public static bool TryParse(string s, out Ref r)
+        {
+            r = Parse(s);
+            return (r.Autors != null || r.Year != null) && r.Title != null;
+        }
+
         private static string ParsePublisherInfo(string s)
         {
             var regex = new Regex(@"([\w-]+\.?)(:[\w\s]+)?");
@@ -72,7 +78,7 @@ namespace bibliographic_lists_syntaxic_analyzer
 
         private static uint? ParseTomInfo(ref string s)
         {
-            var regex = new Regex(@"T\. (?<t>\d+)");
+            var regex = new Regex(@"[TtТт]\.\s*(?<t>\d+)");
 
             uint? tom = null;
             var match = regex.Match(s);
@@ -92,7 +98,7 @@ namespace bibliographic_lists_syntaxic_analyzer
 
         private static string[] ParseAuthorsInfo(ref string s)
         {
-            var regex = new Regex(@"\w+ \w\.\w\.");
+            var regex = new Regex(@"\w+\s+\w\.\s*\w\.");
 
             List<string> authors = new List<string>();
 
@@ -129,7 +135,7 @@ namespace bibliographic_lists_syntaxic_analyzer
 
         private static (uint?, uint?, uint?) ParsePagesInfo(ref string s)
         {
-            Regex regex = new Regex(@"((?<c>\d+) с\.)|(С\. (?<p1>\d+)(-(?<p2>\d+))?)");
+            Regex regex = new Regex(@"((?<c>\d+) с\.)|(С\. (?<p1>\d+)(\p{Pd}(?<p2>\d+))?)");
 
             uint? page1 = null;
             uint? page2 = null;
