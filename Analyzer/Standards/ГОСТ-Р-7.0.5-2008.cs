@@ -6,25 +6,28 @@ namespace bibliographic_lists_syntaxic_analyzer
     {
         protected override void _Check(Ref r)
         {
-            Mustbe(r.Pages.Item1 != null && r.Pages.Item2 != null && r.Pages.Item1 < r.Pages.Item2,
-                    string.Format("Номер первой страницы ({0}) должен быть меньше номера второй ({1}).", r.Pages.Item1, r.Pages.Item2));
+            if (r.Pages.Item1 != null && r.Pages.Item2 != null)
+                Mustbe(r.Pages.Item1 < r.Pages.Item2,
+                        string.Format("Номер первой страницы ({0}) должен быть меньше номера второй ({1}).", r.Pages.Item1, r.Pages.Item2));
+            
+            if (r.Pages.Item2 != null && r.PageCount != null)
+                Mustbe(r.Pages.Item2 <= r.PageCount,
+                        string.Format("Номер второй страницы ({0}) должен быть меньше или равен объему ({1}) источника.", r.Pages.Item2, r.PageCount));
 
-            Mustbe(r.Pages.Item2 != null && r.PageCount != null && r.Pages.Item2 <= r.PageCount,
-                   string.Format("Номер второй страницы ({0}) должен быть меньше или равен объему ({1}) источника.", r.Pages.Item2, r.PageCount));
-
-            Mustbe((r.PageCount != null) != ((r.Pages.Item1 != null) && (r.Pages.Item2 != null)),
-                "В источнике не могут одновременно отсутствовать объем и страницы, на которые он ссылается.");
+            Mustbe((r.PageCount != null) != (r.Pages.Item1 != null),
+                "В источнике не могут одновременно отсутствовать объем и страницы, на которые он ссылается. " +
+                "Добавьте номера страниц, например: \"С. 123\" или \"С. 123-124\", или общее их количество: \"500 c.\"");
 
             DefaultSeparator = " ";
             Separate(r.Autors, ", ");
             Separate(r.Pages, " - ", r.Year);
-            Separate(r.Pages, "-");
+            Separate(r.Pages, "—");
 
             Pattern("С. ", r.Pages);
             Pattern(r.PageCount, " с.");
             Pattern("Т. ", r.Tom);
 
-            if (r.Autors.Length < 3)
+            if (r.Autors == null || r.Autors.Length < 4)
             {
                 Order(r.Autors, 0);
                 Order(r.Title, 1);
@@ -33,7 +36,7 @@ namespace bibliographic_lists_syntaxic_analyzer
             {
                 Order(r.Title, 0);
                 Order(r.Autors, 1);
-                Separate(r.Title, " // ", r.Autors);
+                Separate(r.Title, " / ", r.Autors);
             }
         }
     }

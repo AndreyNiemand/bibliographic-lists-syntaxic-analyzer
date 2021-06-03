@@ -29,13 +29,11 @@ namespace bibliographic_lists_syntaxic_analyzer
             throw new UnknownStandardException(standardName);
         }
 
-        public List<string> Check(string reference)
+        public List<string> Check(Ref r)
         {
             separators = new Dictionary<(object, object), string>();
             wrongCondtionsMessages = new List<string>();
             patterns = new Dictionary<object, (string, string)>();
-
-            var r = Ref.Parse(reference);
 
             order = new List<object>();
             order.Add(r.Autors);
@@ -136,6 +134,8 @@ namespace bibliographic_lists_syntaxic_analyzer
 
         protected void Separate(object[] objs, string separator)
         {
+            if (objs == null) return;
+
             for (var i = 0; i < objs.Length - 1; ++i)
             {
                 this.separators[(objs[i], objs[i+1])] = separator;
