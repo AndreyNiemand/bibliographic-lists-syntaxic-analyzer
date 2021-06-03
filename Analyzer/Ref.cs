@@ -33,8 +33,8 @@ namespace bibliographic_lists_syntaxic_analyzer
                 year: ParseYearInfo(ref s),
                 pagesInfo: ParsePagesInfo(ref s),
                 tom: ParseTomInfo(ref s),
-                publisher: ParsePublisherInfo(s),
-                title: ParseTitleInfo(s)
+                title: ParseTitleInfo(ref s),
+                publisher: ParsePublisherInfo(ref s)
             );
         }
 
@@ -44,33 +44,33 @@ namespace bibliographic_lists_syntaxic_analyzer
             return (r.Autors != null || r.Year != null) && r.Title != null;
         }
 
-        private static string ParsePublisherInfo(string s)
+        private static string ParsePublisherInfo(ref string s)
         {
-            var regex = new Regex(@"([\w-]+\.?)(:[\w\s]+)?");
-
+            var regex = new Regex(@"[\w-]+\s*\.?\s*(:[\w\s]+)?");
             string p = null;
-            List<string> list = new List<string>();
 
-            for (var match = regex.Match(s); match.Success; match = match.NextMatch())
+            var match = regex.Match(s);
+
+            if(match.Success)
             {
                 p = match.Value;
-                list.Add(p);
+                s = s.Remove(s.IndexOf(match.Value), match.Value.Length);
             }
 
             return p;
         }
-        private static string ParseTitleInfo(string s)
+        private static string ParseTitleInfo(ref string s)
         {
             var regex = new Regex(@"\w[\w\s,:]*\.");
 
             string title = null;
 
-            for (var match = regex.Match(s); match.Success; match = match.NextMatch())
+            var match = regex.Match(s);
+
+            if (match.Success)
             { 
-                if (title == null || title.Length < match.Value.Length)
-                {
-                    title = match.Value;
-                }
+                title = match.Value;
+                s = s.Remove(s.IndexOf(match.Value), match.Value.Length);
             }
 
             return title;

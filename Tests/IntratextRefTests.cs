@@ -57,13 +57,13 @@ namespace Tests
         [Test]
         public void Test3()
         {
-            string data_in = "(Аренс В.Ж. Азбука исследователя. М.: Интермет Инжиниринг, 2006)";
+            string data_in = "(Аренс В.Ж. Азбука исследователя. М. : Интермет Инжиниринг, 2006)";
             var r = Ref.Parse(data_in);
 
             Assert.AreEqual(1, r.Autors.Length);
             Assert.AreEqual("Аренс В.Ж.", r.Autors[0]);
 
-            Assert.AreEqual("М.: Интермет Инжиниринг", r.Publisher);
+            Assert.AreEqual("М. : Интермет Инжиниринг", r.Publisher);
             Assert.AreEqual("Азбука исследователя.", r.Title);
 
             Assert.AreEqual(2006, r.Year);
