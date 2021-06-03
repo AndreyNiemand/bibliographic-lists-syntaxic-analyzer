@@ -151,6 +151,16 @@ namespace bibliographic_lists_syntaxic_analyzer
             if (obj != null)
                 patterns.Add(obj, (before, after));
         }
+        protected void Pattern(string before, (object, object) objs, string after = "")
+        {
+            var (o1, o2) = objs;
+            if (o1 != null)
+                patterns.Add(o1, (before, ""));
+
+            if (o2 != null)
+                patterns.Add(o2, ("", after));
+        }
+
         protected void Pattern(object obj, string after)
         {
             Pattern("", obj, after);

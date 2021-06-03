@@ -61,8 +61,6 @@ namespace bibliographic_lists_syntaxic_analyzer
 
         static void Main(string[] args)
         {
-            args = @"-o a.txt -f C:\Users\user\Documents\bibliographic-lists-syntaxic-analyzer\Tests\IntratextRefTest.docx".Split(" ");
-
             CommandLineOptions options = null;
             Parser.Default.ParseArguments<CommandLineOptions>(args)
                 .WithParsed(opt => options = opt)
