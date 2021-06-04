@@ -1,5 +1,7 @@
 using NUnit.Framework;
 using bibliographic_lists_syntaxic_analyzer;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
+using System.Collections.Generic;
 
 namespace Tests
 {
@@ -20,7 +22,7 @@ namespace Tests
             Assert.AreEqual(3, r.Autors.Length);
             Assert.AreEqual("Мельников В.П.", r.Autors[0]);
             Assert.AreEqual("Клейменов С.А.", r.Autors[1]);
-            Assert.AreEqual("Петраков A.M.",  r.Autors[2]);
+            Assert.AreEqual("Петраков A.M.", r.Autors[2]);
 
             Assert.AreEqual(2006, r.Year);
 
@@ -30,7 +32,7 @@ namespace Tests
             Assert.AreEqual(null, r.Tom);
             Assert.AreEqual(null, r.Pages.Item1);
             Assert.AreEqual(null, r.Pages.Item2);
-            Assert.AreEqual(null, r.PageCount);          
+            Assert.AreEqual(null, r.PageCount);
         }
 
         [Test]
@@ -51,7 +53,7 @@ namespace Tests
             Assert.AreEqual(null, r.Tom);
             Assert.AreEqual(null, r.Pages.Item1);
             Assert.AreEqual(null, r.Pages.Item2);
-            Assert.AreEqual(202 , r.PageCount);
+            Assert.AreEqual(202, r.PageCount);
         }
 
         [Test]
@@ -73,5 +75,19 @@ namespace Tests
             Assert.AreEqual(null, r.Pages.Item2);
             Assert.AreEqual(null, r.PageCount);
         }
+
+        //[Test]
+        //public void Test4()
+        //{
+        //    var output = new List<string>();
+        //    var analyzer = new Analyzer() { Standard = Standard.Get("ГОСТ-Р-7.0.5-2008"), Log = (s) => output.Add(s) };
+
+        //    var refs = Analyzer.ReadRefsFromDocx("../../../IntratextRefTest.docx");
+        //    foreach (var r in refs)
+        //    {
+        //        analyzer.Analyze(r);
+        //    }
+        //    // ...
+        //}
     }
 }
