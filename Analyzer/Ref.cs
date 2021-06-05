@@ -7,7 +7,7 @@ namespace bibliographic_lists_syntaxic_analyzer
 {
     public abstract class Ref
     {
-        public string[] Autors { get; }
+        public string[] Authors { get; }
         public int? Year { get; }
         public (uint?, uint?) Pages { get; }
         public uint? PageCount { get; }
@@ -17,7 +17,7 @@ namespace bibliographic_lists_syntaxic_analyzer
 
         public Ref(string[] authors, string title, int? year, (uint?, uint?, uint?) pagesInfo, uint? tom, string publisher)
         {
-            this.Autors = authors;
+            this.Authors = authors;
             this.Title = title;
             this.Year = year;
             this.Pages = (pagesInfo.Item1, pagesInfo.Item2);
@@ -28,7 +28,7 @@ namespace bibliographic_lists_syntaxic_analyzer
 
         public static Ref Parse(string s)
         {
-            return new IntratextRef(
+            return new IntratextRef( 
                 authors: ParseAuthorsInfo(ref s),
                 year: ParseYearInfo(ref s),
                 pagesInfo: ParsePagesInfo(ref s),
@@ -41,7 +41,7 @@ namespace bibliographic_lists_syntaxic_analyzer
         public static bool TryParse(string s, out Ref r)
         {
             r = Parse(s);
-            return (r.Autors != null || r.Year != null) && r.Title != null;
+            return (r.Authors != null || r.Year != null) && r.Title != null;
         }
 
         private static string ParsePublisherInfo(ref string s)

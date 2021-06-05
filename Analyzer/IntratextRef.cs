@@ -8,7 +8,7 @@ namespace bibliographic_lists_syntaxic_analyzer
     {
         public IntratextRef(string[] authors, string title, int? year, (uint?, uint?, uint?) pagesInfo, uint? tom, string publisher)
             : base(authors, title, year, pagesInfo, tom, publisher)
-        { 
+        {
 
         }
     }

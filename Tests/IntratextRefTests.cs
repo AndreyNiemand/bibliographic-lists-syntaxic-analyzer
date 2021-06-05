@@ -22,10 +22,10 @@ namespace Tests
                 "учебное пособие. М., 2006)";
             var r = Ref.Parse(data_in);
 
-            Assert.AreEqual(3, r.Autors.Length);
-            Assert.AreEqual("Мельников В.П.", r.Autors[0]);
-            Assert.AreEqual("Клейменов С.А.", r.Autors[1]);
-            Assert.AreEqual("Петраков A.M.", r.Autors[2]);
+            Assert.AreEqual(3, r.Authors.Length);
+            Assert.AreEqual("Мельников В.П.", r.Authors[0]);
+            Assert.AreEqual("Клейменов С.А.", r.Authors[1]);
+            Assert.AreEqual("Петраков A.M.", r.Authors[2]);
 
             Assert.AreEqual(2006, r.Year);
 
@@ -45,9 +45,9 @@ namespace Tests
             string data_in = "(Потемкин В.К., Казаков Д.Н. Социальное партнерство: формирование, оценка, регулирование. СПб., 2002, 202 с.)";
             var r = Ref.Parse(data_in);
 
-            Assert.AreEqual(2, r.Autors.Length, 2);
-            Assert.AreEqual("Потемкин В.К.", r.Autors[0]);
-            Assert.AreEqual("Казаков Д.Н.", r.Autors[1]);
+            Assert.AreEqual(2, r.Authors.Length, 2);
+            Assert.AreEqual("Потемкин В.К.", r.Authors[0]);
+            Assert.AreEqual("Казаков Д.Н.", r.Authors[1]);
 
             Assert.AreEqual("СПб.", r.Publisher);
             Assert.AreEqual("Социальное партнерство: формирование, оценка, регулирование.", r.Title);
@@ -66,8 +66,8 @@ namespace Tests
             string data_in = "(Аренс В.Ж. Азбука исследователя. М. : Интермет Инжиниринг, 2006)";
             var r = Ref.Parse(data_in);
 
-            Assert.AreEqual(1, r.Autors.Length);
-            Assert.AreEqual("Аренс В.Ж.", r.Autors[0]);
+            Assert.AreEqual(1, r.Authors.Length);
+            Assert.AreEqual("Аренс В.Ж.", r.Authors[0]);
 
             Assert.AreEqual("М. : Интермет Инжиниринг", r.Publisher);
             Assert.AreEqual("Азбука исследователя.", r.Title);

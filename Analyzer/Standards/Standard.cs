@@ -36,7 +36,7 @@ namespace bibliographic_lists_syntaxic_analyzer
             patterns = new Dictionary<object, (string, string)>();
 
             order = new List<object>();
-            order.Add(r.Autors);
+            order.Add(r.Authors);
             order.Add(r.Title);
             order.Add(r.Publisher);
             order.Add(r.Tom);

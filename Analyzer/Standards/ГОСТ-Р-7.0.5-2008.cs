@@ -25,7 +25,7 @@ namespace bibliographic_lists_syntaxic_analyzer
                 "\"С. 123-124\", или общее их количество: \"500 c.\"");
 
             DefaultSeparator = " ";
-            Separate(r.Autors, ", ");
+            Separate(r.Authors, ", ");
             Separate(r.Pages, " - ", r.Year);
             Separate(r.Pages, "—");
 
@@ -33,16 +33,16 @@ namespace bibliographic_lists_syntaxic_analyzer
             Pattern(r.PageCount, " с.");
             Pattern("Т. ", r.Tom);
 
-            if (r.Autors == null || r.Autors.Length < 4)
+            if (r.Authors == null || r.Authors.Length < 4)
             {
-                Order(r.Autors, 0);
+                Order(r.Authors, 0);
                 Order(r.Title, 1);
             }
             else
             {
                 Order(r.Title, 0);
-                Order(r.Autors, 1);
-                Separate(r.Title, " / ", r.Autors);
+                Order(r.Authors, 1);
+                Separate(r.Title, " / ", r.Authors);
             }
         }
     }
