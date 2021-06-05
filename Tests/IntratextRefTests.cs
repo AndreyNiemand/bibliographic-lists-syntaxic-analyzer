@@ -16,7 +16,10 @@ namespace Tests
         [Test]
         public void Test1()
         {
-            string data_in = "(Мельников В.П., Клейменов С.А., Петраков A.M. Информационная безопасность и защита информации, учебное пособие. М., 2006)";
+            string data_in = "(Мельников В.П., " +
+                "Клейменов С.А., Петраков A.M. " +
+                "Информационная безопасность и защита информации, " +
+                "учебное пособие. М., 2006)";
             var r = Ref.Parse(data_in);
 
             Assert.AreEqual(3, r.Autors.Length);
@@ -27,7 +30,8 @@ namespace Tests
             Assert.AreEqual(2006, r.Year);
 
             Assert.AreEqual("М.", r.Publisher);
-            Assert.AreEqual("Информационная безопасность и защита информации, учебное пособие.", r.Title);
+            Assert.AreEqual("Информационная безопасность и защита " +
+                "информации, учебное пособие.", r.Title);
 
             Assert.AreEqual(null, r.Tom);
             Assert.AreEqual(null, r.Pages.Item1);

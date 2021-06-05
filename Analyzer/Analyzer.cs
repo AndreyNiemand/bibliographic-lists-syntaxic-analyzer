@@ -47,7 +47,7 @@ namespace bibliographic_lists_syntaxic_analyzer
 
             Log(string.Format("Analysis: {0}", reference));
 
-            var mistakes = Standard.Check(r);
+            var mistakes = Standard._Check(r);
 
             if (mistakes.Count != 0)
             {

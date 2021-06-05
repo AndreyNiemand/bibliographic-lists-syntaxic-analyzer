@@ -4,19 +4,25 @@ namespace bibliographic_lists_syntaxic_analyzer
 {
     public class ГОСТ_Р_705_2008 : Standard
     {
-        protected override void _Check(Ref r)
+        protected override void Check(Ref r)
         {
             if (r.Pages.Item1 != null && r.Pages.Item2 != null)
                 Mustbe(r.Pages.Item1 < r.Pages.Item2,
-                        string.Format("Номер первой страницы ({0}) должен быть меньше номера второй ({1}).", r.Pages.Item1, r.Pages.Item2));
+                        string.Format("Номер первой страницы ({0}) " +
+                        "должен быть меньше номера второй ({1}).", 
+                        r.Pages.Item1, r.Pages.Item2));
             
             if (r.Pages.Item2 != null && r.PageCount != null)
                 Mustbe(r.Pages.Item2 <= r.PageCount,
-                        string.Format("Номер второй страницы ({0}) должен быть меньше или равен объему ({1}) источника.", r.Pages.Item2, r.PageCount));
+                        string.Format("Номер второй страницы ({0}) " +
+                        "должен быть меньше или равен объему ({1}) источника.", 
+                        r.Pages.Item2, r.PageCount));
 
             Mustbe((r.PageCount != null) != (r.Pages.Item1 != null),
-                "В источнике не могут одновременно отсутствовать объем и страницы, на которые он ссылается. " +
-                "Добавьте номера страниц, например: \"С. 123\" или \"С. 123-124\", или общее их количество: \"500 c.\"");
+                "В источнике не могут одновременно отсутствовать объем " +
+                "и страницы, на которые он ссылается. " +
+                "Добавьте номера страниц, например: \"С. 123\" или " +
+                "\"С. 123-124\", или общее их количество: \"500 c.\"");
 
             DefaultSeparator = " ";
             Separate(r.Autors, ", ");

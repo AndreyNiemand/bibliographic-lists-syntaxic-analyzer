@@ -29,7 +29,7 @@ namespace bibliographic_lists_syntaxic_analyzer
             throw new UnknownStandardException(standardName);
         }
 
-        public List<string> Check(Ref r)
+        public List<string> _Check(Ref r)
         {
             separators = new Dictionary<(object, object), string>();
             wrongCondtionsMessages = new List<string>();
@@ -44,7 +44,7 @@ namespace bibliographic_lists_syntaxic_analyzer
             order.Add(r.Pages);
             order.Add(r.PageCount);
 
-            _Check(r);
+            Check(r);
 
             return wrongCondtionsMessages;
         }
@@ -117,7 +117,7 @@ namespace bibliographic_lists_syntaxic_analyzer
             return DefaultSeparator;
         }
 
-        protected abstract void _Check(Ref r);
+        protected abstract void Check(Ref r);
 
         protected void Mustbe(bool cond, string message)
         {
