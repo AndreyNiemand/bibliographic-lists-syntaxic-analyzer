@@ -1,7 +1,5 @@
 ﻿
-using CommandLine;
 using DocumentFormat.OpenXml.Packaging;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -17,7 +15,7 @@ namespace bibliographic_lists_syntaxic_analyzer
 
         public Analyzer() {}
 
-        public static List<string> ReadRefsFromDocx(string file)
+        public List<Ref> ReadRefsFromDocx(string file)
         {
             using (var doc = WordprocessingDocument.Open(file, false))
             {
@@ -27,25 +25,71 @@ namespace bibliographic_lists_syntaxic_analyzer
                     docText = sr.ReadToEnd();
                 }
 
-                var refs = new List<string>();
+                var refs = new List<Ref>();
+                var parser = new Parser(Standard);
+
                 var (reRB, reTB) = (new Regex(@"\(.*?\)"), new Regex(@"<.*?>"));
                 for (var m = reRB.Match(docText); m.Success; m = m.NextMatch())
                 {
-                    refs.Add(reTB.Replace(m.Value, ""));
+                    var maybeIntratext = reTB.Replace(m.Value, "");
+                    if (parser.TryParse(maybeIntratext, out IntratextRef intratext))
+                    {
+                        refs.Add(intratext);
+                    }
+                }
+                
+                if (doc.MainDocumentPart?.FootnotesPart?.Footnotes?.ChildElements != null)
+                {
+                    foreach (var subscript in doc.MainDocumentPart.FootnotesPart.Footnotes.ChildElements)
+                    {
+                        if (!string.IsNullOrEmpty(subscript.InnerText))
+                        {
+                            refs.Add(parser.Parse<SubscriptRef>(subscript.InnerText));
+                        }
+                    }
+                }
+
+                var (reRS, fmt) = (new Regex(@"\[(.*?)\]"), new Regex(@"(?<n>\d+,)?(?<r>.*)"));
+                var rawOfftexts = new List<List<string>>();
+               
+                for (var m = reRS.Match(docText); m.Success; m = m.NextMatch())
+                {
+                    var maybeOfftext = reTB.Replace(m.Groups[1].Value, "");
+                    var temp = new List<string>();
+                    foreach (var t in maybeOfftext.Split(","))
+                    {
+                        temp.Add(t.Trim());
+                    }
+                    rawOfftexts.Add(temp);
+                }
+
+                var items = doc.MainDocumentPart.Document.ChildElements[0].ChildElements;
+                int i = 0;
+                for (; i < items?.Count; ++i)
+                {
+                    if (items[i]?.InnerText == "Ссылки")
+                    {
+                        ++i;
+                        break;
+                    }
+                }
+
+                for (; i < items?.Count; ++i)
+                {
+                    var temp = items[i]?.InnerText;
+                    if (!string.IsNullOrEmpty(temp))
+                    {
+                        refs.Add(parser.Parse<OfftextRef>(temp));
+                    }
                 }
 
                 return refs;
             }
         }
 
-        public void Analyze(string reference)
+        public void Analyze(Ref r)
         {
-            if (!Ref.TryParse(reference, out Ref r))
-            {
-                return;
-            }
-
-            Log(string.Format("Analysis: {0}", reference));
+            //Log(string.Format("Analysis: {0}", reference));
 
             var mistakes = Standard._Check(r);
 
@@ -61,6 +105,17 @@ namespace bibliographic_lists_syntaxic_analyzer
 
             Log(string.Format("Right reference: {0}", Standard.GetRightRef()));
             Log("--------------------------------------------------------------");
+        }
+
+        public void Analyze(string reference)
+        {
+            var parser = new Parser(Standard);
+            if (!parser.TryParse(reference, out IntratextRef r))
+            {
+                return;
+            }
+
+            Analyze(r);  
         }
     }
 }

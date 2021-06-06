@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace bibliographic_lists_syntaxic_analyzer
 {
     public class ГОСТ_Р_705_2008 : Standard

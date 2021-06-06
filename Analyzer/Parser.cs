@@ -1,57 +1,51 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace bibliographic_lists_syntaxic_analyzer
 {
-    public abstract class Ref
+    public class Parser
     {
-        public string[] Authors { get; }
-        public int? Year { get; }
-        public (uint?, uint?) Pages { get; }
-        public uint? PageCount { get; }
-        public uint? Tom { get; }
-        public string Title { get; }
-        public string Publisher { get; }
+        Standard Standard { get; }
+        public static object Default { get; internal set; }
 
-        public Ref(string[] authors, string title, int? year, (uint?, uint?, uint?) pagesInfo, uint? tom, string publisher)
+        public Parser(Standard std)
         {
-            this.Authors = authors;
-            this.Title = title;
-            this.Year = year;
-            this.Pages = (pagesInfo.Item1, pagesInfo.Item2);
-            this.PageCount = pagesInfo.Item3;
-            this.Tom = tom;
-            this.Publisher = publisher;
+            Standard = std;
         }
 
-        public static Ref Parse(string s)
+        public T Parse<T>(string s)
+            where T : Ref, new()
         {
-            return new IntratextRef( 
-                authors: ParseAuthorsInfo(ref s),
-                year: ParseYearInfo(ref s),
-                pagesInfo: ParsePagesInfo(ref s),
-                tom: ParseTomInfo(ref s),
-                title: ParseTitleInfo(ref s),
-                publisher: ParsePublisherInfo(ref s)
-            );
+            var t = new T();
+
+            t.Authors = ParseAuthorsInfo(ref s);
+            t.Year = ParseYearInfo(ref s);
+            t.Pages = ParsePagesInfo(ref s);
+            t.PageCount = ParsePagesCountInfo(ref s);
+            t.Tom = ParseTomInfo(ref s);
+            t.Title = ParseTitleInfo(ref s);
+            t.Publisher = ParsePublisherInfo(ref s);
+
+            return t;
         }
 
-        public static bool TryParse(string s, out Ref r)
+        public virtual bool TryParse<T>(string s, out T r)
+            where T : Ref, new()
         {
-            r = Parse(s);
-            return (r.Authors != null || r.Year != null) && r.Title != null;
+            r = Parse<T>(s);
+            return Standard.EnoughInfoToBeParsed(r);
         }
 
-        private static string ParsePublisherInfo(ref string s)
+
+        protected string ParsePublisherInfo(ref string s)
         {
-            var regex = new Regex(@"[\w-]+\s*\.?\s*(:[\w\s]+)?");
+            var regex = Standard.PublisherRegex;
             string p = null;
 
             var match = regex.Match(s);
 
-            if(match.Success)
+            if (match.Success)
             {
                 p = match.Value;
                 s = s.Remove(s.IndexOf(match.Value), match.Value.Length);
@@ -59,16 +53,16 @@ namespace bibliographic_lists_syntaxic_analyzer
 
             return p;
         }
-        private static string ParseTitleInfo(ref string s)
+        protected string ParseTitleInfo(ref string s)
         {
-            var regex = new Regex(@"\w[\w\s,:]*\.");
+            var regex = Standard.TitleRegex;
 
             string title = null;
 
             var match = regex.Match(s);
 
             if (match.Success)
-            { 
+            {
                 title = match.Value;
                 s = s.Remove(s.IndexOf(match.Value), match.Value.Length);
             }
@@ -76,9 +70,9 @@ namespace bibliographic_lists_syntaxic_analyzer
             return title;
         }
 
-        private static uint? ParseTomInfo(ref string s)
+        protected uint? ParseTomInfo(ref string s)
         {
-            var regex = new Regex(@"[TtТт]\.\s*(?<t>\d+)");
+            var regex = Standard.TomRegex;
 
             uint? tom = null;
             var match = regex.Match(s);
@@ -96,9 +90,9 @@ namespace bibliographic_lists_syntaxic_analyzer
             return tom;
         }
 
-        private static string[] ParseAuthorsInfo(ref string s)
+        protected string[] ParseAuthorsInfo(ref string s)
         {
-            var regex = new Regex(@"\w+\s+\w\.\s*\w\.");
+            var regex = Standard.AuthorsRegex;
 
             List<string> authors = new List<string>();
 
@@ -107,7 +101,7 @@ namespace bibliographic_lists_syntaxic_analyzer
                 authors.Add(match.Value);
             }
 
-            if (authors.Count != 0) 
+            if (authors.Count != 0)
             {
                 var begin = s.IndexOf(authors[0]);
                 var end = s.IndexOf(authors[authors.Count - 1]) - s.IndexOf(authors[0]) + authors[authors.Count - 1].Length + 1;
@@ -117,9 +111,9 @@ namespace bibliographic_lists_syntaxic_analyzer
             return authors.Count != 0 ? authors.ToArray() : null;
         }
 
-        private static int? ParseYearInfo(ref string s)
+        protected int? ParseYearInfo(ref string s)
         {
-            Regex regex = new Regex(@"\d{4}");
+            var regex = Standard.YearRegex;
 
             int? year = null;
             var match = regex.Match(s);
@@ -133,13 +127,12 @@ namespace bibliographic_lists_syntaxic_analyzer
             return year;
         }
 
-        private static (uint?, uint?, uint?) ParsePagesInfo(ref string s)
+        protected (uint?, uint?) ParsePagesInfo(ref string s)
         {
-            Regex regex = new Regex(@"((?<c>\d+) с\.)|(С\. (?<p1>\d+)(\p{Pd}(?<p2>\d+))?)");
+            var regex = Standard.PagesRegex;
 
             uint? page1 = null;
             uint? page2 = null;
-            uint? count = null;
             var match = regex.Match(s);
 
             if (match.Success)
@@ -156,6 +149,21 @@ namespace bibliographic_lists_syntaxic_analyzer
                     page2 = UInt32.Parse(p2.Value);
                 }
 
+                s = s.Remove(s.IndexOf(match.Value), match.Value.Length);
+            }
+
+            return (page1, page2);
+        }
+
+        protected uint? ParsePagesCountInfo(ref string s)
+        {
+            var regex = Standard.PagesCountRegex;
+
+            uint? count = null;
+            var match = regex.Match(s);
+
+            if (match.Success)
+            {
                 var c = match.Groups["c"];
                 if (c.Success)
                 {
@@ -165,7 +173,8 @@ namespace bibliographic_lists_syntaxic_analyzer
                 s = s.Remove(s.IndexOf(match.Value), match.Value.Length);
             }
 
-            return (page1, page2, count);
+            return count;
         }
+
     }
 }

@@ -1,12 +1,13 @@
-using NUnit.Framework;
 using bibliographic_lists_syntaxic_analyzer;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
-using System.Collections.Generic;
+
+using NUnit.Framework;
 
 namespace Tests
 {
     public class IntratextRefTests
     {
+        readonly Parser parser = new Parser(Standard.Get("ГОСТ-Р-7.0.5-2008"));
+
         [SetUp]
         public void Setup()
         {
@@ -20,7 +21,7 @@ namespace Tests
                 "Клейменов С.А., Петраков A.M. " +
                 "Информационная безопасность и защита информации, " +
                 "учебное пособие. М., 2006)";
-            var r = Ref.Parse(data_in);
+            var r = parser.Parse<IntratextRef>(data_in);
 
             Assert.AreEqual(3, r.Authors.Length);
             Assert.AreEqual("Мельников В.П.", r.Authors[0]);
@@ -43,7 +44,7 @@ namespace Tests
         public void Test2()
         {
             string data_in = "(Потемкин В.К., Казаков Д.Н. Социальное партнерство: формирование, оценка, регулирование. СПб., 2002, 202 с.)";
-            var r = Ref.Parse(data_in);
+            var r = parser.Parse<IntratextRef>(data_in);
 
             Assert.AreEqual(2, r.Authors.Length, 2);
             Assert.AreEqual("Потемкин В.К.", r.Authors[0]);
@@ -64,7 +65,7 @@ namespace Tests
         public void Test3()
         {
             string data_in = "(Аренс В.Ж. Азбука исследователя. М. : Интермет Инжиниринг, 2006)";
-            var r = Ref.Parse(data_in);
+            var r = parser.Parse<IntratextRef>(data_in);
 
             Assert.AreEqual(1, r.Authors.Length);
             Assert.AreEqual("Аренс В.Ж.", r.Authors[0]);

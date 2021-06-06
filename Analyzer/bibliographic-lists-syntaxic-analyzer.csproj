@@ -9,10 +9,13 @@
   <ItemGroup>
     <Compile Remove="Standarts\**" />
     <Compile Remove="ГОСТ-Р-7.0.5-2008\**" />
+    <Compile Remove="Новая папка\**" />
     <EmbeddedResource Remove="Standarts\**" />
     <EmbeddedResource Remove="ГОСТ-Р-7.0.5-2008\**" />
+    <EmbeddedResource Remove="Новая папка\**" />
     <None Remove="Standarts\**" />
     <None Remove="ГОСТ-Р-7.0.5-2008\**" />
+    <None Remove="Новая папка\**" />
   </ItemGroup>
 
   <ItemGroup>
