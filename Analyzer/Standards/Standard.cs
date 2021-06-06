@@ -12,11 +12,11 @@ namespace bibliographic_lists_syntaxic_analyzer
             standards.Add("ГОСТ-Р-7.0.5-2008", () => new ГОСТ_Р_705_2008());
         }
 
-        public virtual Regex PublisherRegex { get; } = new Regex(@"[\w-]+\s*\.?\s*(:[\w\s]+)?");
-        public virtual Regex TitleRegex { get; } = new Regex(@"\w[\w\s,:]*\.");
+        public virtual Regex PublisherRegex { get; } = new Regex(@"(?<p>[\w-]+\s*\.?\s*(:[\w\s]+)?)");
+        public virtual Regex TitleRegex { get; } = new Regex(@"(?<t>\w[\w\s,:]*\.)");
         public virtual Regex TomRegex { get; } = new Regex(@"[TtТт]\.\s*(?<t>\d+)");
-        public virtual Regex AuthorsRegex { get; } = new Regex(@"\w+\s+\w\.\s*\w\.");
-        public virtual Regex YearRegex { get; } = new Regex(@"\d{4}");
+        public virtual Regex AuthorsRegex { get; } = new Regex(@"(?<a>\w+\s+\w\.\s*\w\.)");
+        public virtual Regex YearRegex { get; } = new Regex(@"(?<y>\d{4})");
         public virtual Regex PagesRegex { get; } = new Regex(@"С\. (?<p1>\d+)(\p{Pd}(?<p2>\d+))?");
         public virtual Regex PagesCountRegex { get; } = new Regex(@"(?<c>\d+) с\.");
 

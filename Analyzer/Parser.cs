@@ -7,7 +7,6 @@ namespace bibliographic_lists_syntaxic_analyzer
     public class Parser
     {
         Standard Standard { get; }
-        public static object Default { get; internal set; }
 
         public Parser(Standard std)
         {
