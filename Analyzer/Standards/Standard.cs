@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace bibliographic_lists_syntaxic_analyzer
@@ -13,7 +14,7 @@ namespace bibliographic_lists_syntaxic_analyzer
         }
 
         public virtual Regex PublisherRegex { get; } = new Regex(@"(?<p>[\w-]+\s*\.?\s*(:[\w\s]+)?)");
-        public virtual Regex TitleRegex { get; } = new Regex(@"(?<t>\w[\w\s,:]*\.)");
+        public virtual Regex TitleRegex { get; } = new Regex(@"(?<t>\w[\w\s,:]*\.{1,3})");
         public virtual Regex TomRegex { get; } = new Regex(@"[TtТт]\.\s*(?<t>\d+)");
         public virtual Regex AuthorsRegex { get; } = new Regex(@"(?<a>\w+\s+\w\.\s*\w\.)");
         public virtual Regex YearRegex { get; } = new Regex(@"(?<y>\d{4})");
@@ -23,6 +24,24 @@ namespace bibliographic_lists_syntaxic_analyzer
         public virtual bool EnoughInfoToBeParsed(Ref r)
         {
             return (r.Authors != null || r.Year != null) && r.Title != null;
+        }
+
+        public virtual bool IsRepeatRef(Ref first, Ref repeat)
+        {
+            var authorsEquality = true;
+            for (int i = 0; authorsEquality && i < first.Authors?.Length; ++i)
+            {
+                authorsEquality = authorsEquality && (first?.Authors[i] == repeat?.Authors?[i]);
+            }
+
+            var (t1, t2) = (first?.Title, repeat?.Title);
+ 
+            if (t2.EndsWith("..."))
+            {
+                t1 = t1.Substring(0, t2.Length - 4) + " ...";
+            }
+
+            return authorsEquality && (t1 == t2);
         }
 
         private List<object> order { get; set; }

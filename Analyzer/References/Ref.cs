@@ -20,5 +20,15 @@
             this.Title = Title;
             this.Publisher = Publisher;
         }
+
+        protected void Init(Ref r)
+        {
+            Init(r.Authors, r.Year, r.Pages, r.PageCount, r.Tom, r.Title, r.Publisher);
+        }
+
+        public Ref()
+        { 
+        
+        }
     }
 }

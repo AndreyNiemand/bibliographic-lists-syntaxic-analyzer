@@ -23,6 +23,7 @@ namespace bibliographic_lists_syntaxic_analyzer
                 "Добавьте номера страниц, например: \"С. 123\" или " +
                 "\"С. 123-124\", или общее их количество: \"500 c.\"");
 
+
             DefaultSeparator = " ";
             Separate(r.Authors, ", ");
             Separate(r.Pages, " - ", r.Year);

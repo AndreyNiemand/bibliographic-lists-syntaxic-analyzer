@@ -34,7 +34,25 @@ namespace bibliographic_lists_syntaxic_analyzer
                     var maybeIntratext = reTB.Replace(m.Value, "");
                     if (parser.TryParse(maybeIntratext, out IntratextRef intratext))
                     {
-                        refs.Add(intratext);
+                        int j = 0;
+                        for (; j < refs.Count; ++j)
+                        {
+                            if (Standard.IsRepeatRef(refs[j], intratext))
+                            {
+                                var r = refs[j] as RepeatIntratextRef != null 
+                                    ? refs[j] as RepeatIntratextRef 
+                                    : new RepeatIntratextRef(refs[j]);
+                                r.ChildReferences.Add(intratext);
+                                refs[j] = r;
+                                break;
+                            }
+                        }
+
+                        if (j == refs.Count)
+                        { 
+                            refs.Add(intratext); 
+                        }
+                        
                     }
                 }
                 

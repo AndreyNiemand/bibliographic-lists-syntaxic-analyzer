@@ -8,8 +8,6 @@ namespace bibliographic_lists_syntaxic_analyzer
     {
         static void Main(string[] args)
         {
-            args = new string[] { "-f", @"C:\Users\user\Documents\bibliographic-lists-syntaxic-analyzer\Tests\OfftextRefTests.docx" };
-
             CommandLineOptions options = null;
             CommandLine.Parser.Default.ParseArguments<CommandLineOptions>(args)
                 .WithParsed(opt => options = opt)
