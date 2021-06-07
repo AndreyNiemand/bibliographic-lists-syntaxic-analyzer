@@ -18,13 +18,15 @@ namespace bibliographic_lists_syntaxic_analyzer
         {
             var t = new T();
 
-            t.Authors = ParseAuthorsInfo(ref s);
-            t.Year = ParseYearInfo(ref s);
-            t.Pages = ParsePagesInfo(ref s);
-            t.PageCount = ParsePagesCountInfo(ref s);
-            t.Tom = ParseTomInfo(ref s);
-            t.Title = ParseTitleInfo(ref s);
-            t.Publisher = ParsePublisherInfo(ref s);
+            t.Init(
+                Authors: ParseAuthorsInfo(ref s), 
+                Year: ParseYearInfo(ref s), 
+                Pages: ParsePagesInfo(ref s),
+                PageCount: ParsePagesCountInfo(ref s),
+                Tom: ParseTomInfo(ref s),
+                Title: ParseTitleInfo(ref s),
+                Publisher: ParsePublisherInfo(ref s)
+            );
 
             return t;
         }
