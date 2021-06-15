@@ -13,43 +13,32 @@ namespace bibliographic_lists_syntaxic_analyzer
             standards.Add("ГОСТ-Р-7.0.5-2008", () => new ГОСТ_Р_705_2008());
         }
 
-        public virtual Regex PublisherRegex { get; } = new Regex(@"(?<p>[\w-]+\s*\.?\s*(:[\w\s]+)?)");
-        public virtual Regex TitleRegex { get; } = new Regex(@"(?<t>\w[\w\s,:]*\.{1,3})");
-        public virtual Regex TomRegex { get; } = new Regex(@"[TtТт]\.\s*(?<t>\d+)");
-        public virtual Regex AuthorsRegex { get; } = new Regex(@"(?<a>\w+\s+\w\.\s*\w\.)");
-        public virtual Regex YearRegex { get; } = new Regex(@"(?<y>\d{4})");
-        public virtual Regex PagesRegex { get; } = new Regex(@"С\. (?<p1>\d+)(\p{Pd}(?<p2>\d+))?");
-        public virtual Regex PagesCountRegex { get; } = new Regex(@"(?<c>\d+) с\.");
+        public abstract Regex PublisherRegex { get; } 
+        public abstract Regex TitleRegex { get; } 
+        public abstract Regex TomRegex { get; }
+        public abstract Regex AuthorsRegex { get; }
+        public abstract Regex YearRegex { get; }
+        public abstract Regex PagesRegex { get; } 
+        public abstract Regex PagesCountRegex { get; }
+
+        public abstract string ComplexSeparator { get; }
+        public virtual string Ibid { get; } = "Ibid";
 
         public virtual bool EnoughInfoToBeParsed(Ref r)
         {
             return (r.Authors != null || r.Year != null) && r.Title != null;
         }
 
-        public virtual bool IsRepeatRef(Ref first, Ref repeat)
-        {
-            var authorsEquality = true;
-            for (int i = 0; authorsEquality && i < first.Authors?.Length; ++i)
-            {
-                authorsEquality = authorsEquality && (first?.Authors[i] == repeat?.Authors?[i]);
-            }
-
-            var (t1, t2) = (first?.Title, repeat?.Title);
- 
-            if (t2.EndsWith("..."))
-            {
-                t1 = t1.Substring(0, t2.Length - 4) + " ...";
-            }
-
-            return authorsEquality && (t1 == t2);
-        }
+        public abstract bool IsRepeatRef(Ref first, Ref repeat);
+        public abstract bool IsPartOfOfftextRef(Ref part, Ref r);
 
         private List<object> order { get; set; }
         private Dictionary<(object, object), string> separators { get; set; }
         private Dictionary<object, (string, string)> patterns { get; set; }
         private List<string> wrongCondtionsMessages { get; set; }
 
-        protected string DefaultSeparator = " ";
+        protected string DefaultSeparator { get; set; } = " ";
+        public virtual string OfftextRefNameOfHeading => "Offtext References";
 
         private static Dictionary<string, Func<Standard>> standards = new Dictionary<string, Func<Standard>>();
 
@@ -83,7 +72,12 @@ namespace bibliographic_lists_syntaxic_analyzer
             return wrongCondtionsMessages;
         }
 
-        public string GetRightRef()
+        protected virtual (string, string) IntratextRefCharsAround => ("", "");
+        protected virtual (string, string) SubscriptRefCharsAround => ("", "");
+        protected virtual (string, string) OfftextRefCharsAround => ("", "");
+        protected virtual (string, string) OfftextPartRefCharsAround => ("", "");
+
+        public string GetRightRef(Ref.PositionType type)
         {
             string result = "";
             object previous = null;
@@ -125,7 +119,15 @@ namespace bibliographic_lists_syntaxic_analyzer
                 }
             }
 
-            return result;
+            switch (type)
+            {
+                case Ref.PositionType.Intratext:   return IntratextRefCharsAround.  Item1 + result + IntratextRefCharsAround.  Item2;
+                case Ref.PositionType.Subscript:   return SubscriptRefCharsAround.  Item1 + result + SubscriptRefCharsAround.  Item2;
+                case Ref.PositionType.Offtext:     return OfftextRefCharsAround.    Item1 + result + OfftextRefCharsAround.    Item2;
+                case Ref.PositionType.OfftextPart: return OfftextPartRefCharsAround.Item1 + result + OfftextPartRefCharsAround.Item2;
+            }
+
+            throw new NotImplementedException();
         }
 
         private string ToStringWithPattern(object obj)
@@ -151,15 +153,9 @@ namespace bibliographic_lists_syntaxic_analyzer
             return DefaultSeparator;
         }
 
-        protected abstract void Check(Ref r);
+        protected virtual void Check(Ref r) { }
 
-        protected void Mustbe(bool cond, string message)
-        {
-            if (!cond)
-            {
-                wrongCondtionsMessages.Add(message);
-            }
-        }
+        protected void Log(string message) => wrongCondtionsMessages.Add(message);
 
         protected void Separate(object obj1, string separator, object obj2)
         {

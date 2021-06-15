@@ -8,6 +8,9 @@ namespace bibliographic_lists_syntaxic_analyzer
     {
         static void Main(string[] args)
         {
+            args = new string[] { "-f", @"C:\Users\user\Documents\bibliographic-lists-syntaxic-analyzer\Tests\Test.docx" };
+            //args = new string[] { "-r", @"Федощев А.Г. Муниципальное право в схемах и определениях. Федощева Н.Н. М. : Юристъ, 2007. 162 с." };
+
             CommandLineOptions options = null;
             CommandLine.Parser.Default.ParseArguments<CommandLineOptions>(args)
                 .WithParsed(opt => options = opt)
@@ -55,7 +58,8 @@ namespace bibliographic_lists_syntaxic_analyzer
 
                 if (options.File != null)
                 {
-                    var refs = analyzer.ReadRefsFromDocx(options.File);
+                    var parser = new Parser(analyzer.Standard);
+                    var refs = parser.ParseRefsFromDocx(options.File);
                     foreach (var r in refs)
                     {
                         analyzer.Analyze(r);

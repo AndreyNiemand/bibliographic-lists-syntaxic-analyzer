@@ -24,4 +24,8 @@
     <PackageReference Include="FakeItEasy" Version="7.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="References\" />
+  </ItemGroup>
+
 </Project>
